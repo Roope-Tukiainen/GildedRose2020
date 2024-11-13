@@ -40,6 +40,15 @@ public class GildedRoseTest {
 		assertEquals("Failed quality for Dexterity Vest", 19, quality);
 	}
 	
+	@Test
+	public void noAddedItemsDay() {
+		GildedRose inn = new GildedRose();
+		List<Item> beforeItems = inn.getItems();
+		inn.oneDay();
+		List<Item> afterItems = inn.getItems();
+		String errMsg = "There shouldn't be any items magically appearing when they are not added";
+		assertEquals(errMsg, beforeItems.size(), afterItems.size());
+	}
 	
 	@Test
 	public void sellInDecreases() {
@@ -122,6 +131,7 @@ public class GildedRoseTest {
 		for (Item item : items) {
 			inn.setItem(item);
 		}
+
 		for (int i = 0; i < 35; i++ ) {
 			inn.oneDay();
 		}
@@ -137,5 +147,32 @@ public class GildedRoseTest {
 			boolean negQual = item.getQuality() < 0;
 			assertEquals(name + errMsg, false, negQual);
 		}
+	}
+	
+	@Test
+	public void backStagePass() {
+		GildedRose inn = new GildedRose();
+		List<Item> items = new ArrayList<Item>();
+		String itemName = "Backstage passes to a TAFKAL80ETC concert";
+		items.add(new Item(itemName, 1, 20));
+		items.add(new Item(itemName, 6, 20));
+		items.add(new Item(itemName, 11, 20));
+		items.add(new Item(itemName, 21, 20));
+		for (Item item: items) {
+			inn.setItem(item);
+		}
+		for (int i = 0; i < 5; i++ ) {
+			inn.oneDay();
+		}
+		items = inn.getItems();
+		List<Integer> expected = new ArrayList<Integer>();
+		expected.add(0);
+		expected.add(34);
+		expected.add(29);
+		expected.add(25);
+		for (int i = 0; i < items.size(); i++) {
+			assertEquals(itemName + ", wrong increase in quality", (int)expected.get(i), items.get(i).getQuality());
+		}
+		
 	}
 }
